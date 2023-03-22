@@ -31,9 +31,11 @@ jobs:
           if ${{ github.event_name == 'workflow_dispatch' }}; then
             export PACKAGES='["BlobViaEventGrid","EventHub","StorageQueue"]'
           fi
+          echo "$PACKAGES"
           echo "packages=$PACKAGES" >> $GITHUB_OUTPUT
   build:
     name: Build
+    if: needs.check.outputs.packages != '[]'
     runs-on: ubuntu-latest
     env:
       AWS_SERVERLESS_BUCKET: ${{ secrets.AWS_PUBLIC_BUCKET }}
