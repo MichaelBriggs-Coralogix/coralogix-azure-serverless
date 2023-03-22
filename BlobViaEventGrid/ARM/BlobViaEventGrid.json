@@ -57,18 +57,13 @@
     }
   },
   "variables": {
-    "CoralogixURL": "[if(equals(parameters('CoralogixRegion'), 'Europe'), 'https://api.coralogix.com:443/api/v1/logs',
-                      if(equals(parameters('CoralogixRegion'), 'US'), 'https://api.coralogix.us:443/api/v1/logs',
-                      if(equals(parameters('CoralogixRegion'), 'Europe2'), 'https://api.eu2.coralogix.com:443/api/v1/logs',
-                      if(equals(parameters('CoralogixRegion'), 'India'), 'https://api.app.coralogix.in:443/api/v1/logs',
-                      if(equals(parameters('CoralogixRegion'), 'Singapore'), 'https://api.coralogixsg.com:443/api/v1/logs',
-                      'NULL')))))]",
+    "CoralogixURL": "[if(equals(parameters('CoralogixRegion'), 'Europe'), 'https://api.coralogix.com:443/api/v1/logs', if(equals(parameters('CoralogixRegion'), 'US'), 'https://api.coralogix.us:443/api/v1/logs', if(equals(parameters('CoralogixRegion'), 'Europe2'), 'https://api.eu2.coralogix.com:443/api/v1/logs', if(equals(parameters('CoralogixRegion'), 'India'), 'https://api.app.coralogix.in:443/api/v1/logs', if(equals(parameters('CoralogixRegion'), 'Singapore'), 'https://api.coralogixsg.com:443/api/v1/logs', 'NULL')))))]",
     "functionAppName": "[format('BlobStorage-{0}', uniqueString(concat(resourceGroup().id, parameters('BlobStorageConnectString'), parameters('BlobContainerName'))))]",
     "hostingPlanName": "[variables('functionAppName')]",
     "applicationInsightsName": "[variables('functionAppName')]",
     "storageAccountName": "[format('{0}azfunctions', uniqueString(resourceGroup().id))]",
     "location": "[resourceGroup().location]",
-    "packageUri": "https://mbriggs-public-bucket.s3.eu-central-1.amazonaws.com/azure-functions-repo/BlobViaEventGrid.zip"
+    "packageUri": "https://coralogix-public.s3.eu-west-1.amazonaws.com/azure-functions-repo/blobviaeventgrid.zip"
   },
   "resources": [
     {
