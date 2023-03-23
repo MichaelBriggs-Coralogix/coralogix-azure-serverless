@@ -10,6 +10,8 @@ on:
 
 env:
   AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  GITHUB_EVENT_NAME: ${{ github.event_name }}
+  GITHUB_EVENT: ${{ github.event }}
 
 jobs:
   check:
@@ -27,6 +29,8 @@ jobs:
       - name: Get Changed Packages
         id: get-changed-packages
         run: |
+          echo "Event Name: $GITHUB_EVENT_NAME"
+          echo "Event: $GITHUB_EVENT"
           export PACKAGES=$(git diff --name-only --diff-filter=d ${{ github.event.pull_request.base.sha || 'origin/master' }} ${{ github.sha }} ./*/ | cut -f1 -d/ | sort | uniq | jq -rcnR '[inputs]')
           if ${{ github.event_name == 'workflow_dispatch' }}; then
             export PACKAGES='["BlobViaEventGrid","EventHub","StorageQueue"]'
@@ -69,12 +73,12 @@ jobs:
         run: npm run build:production
 
       - name: Package
-        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true }} || ${{ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true }}
         working-directory: ./${{ matrix.package }}
         run: zip -r ${{ matrix.package }}.zip . -x ".*"
 
       - name: Setup AWS credentials
-        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true }} || ${{ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true }}
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.CS_DEVOPS_S3_AWS_ACCESS_KEY_ID }}
@@ -82,7 +86,7 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
       - name: Upload to S3
-        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true }} || ${{ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true }}
         working-directory: ./${{ matrix.package }}
         run: |
           aws s3 cp \
